@@ -27,4 +27,4 @@ conda activate .python/venv/
 
 
 # Modify the path to a Python script that is the entry script to your project:
-# python start.py
+python src/run.py

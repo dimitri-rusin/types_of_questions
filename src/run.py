@@ -1,41 +1,65 @@
-import numpy as np
+# simulation
+import math
 
-# Model: Basic gravity simulation
-def simulate_fall(initial_height, time, gravity=9.81):
-    # Equation of motion: h(t) = h0 - 0.5 * g * t^2
-    height = initial_height - 0.5 * gravity * time ** 2
-    return max(height, 0)  # object can't fall below ground level
+def time_to_fall(height, gravity=9.81):
+    """
+    Calculate the time it takes for an object to fall from a given height.
 
-# Simulate the height of an object after 2 seconds
-initial_height = 100  # meters
-time = 2  # seconds
-output = simulate_fall(initial_height, time)
-print(f"Height after {time} seconds: {output:.2f} meters")
+    Parameters:
+    height (float): Height in meters from which the object is dropped.
+    gravity (float): Acceleration due to gravity (m/s^2), default is 9.81 m/s^2.
+
+    Returns:
+    float: Time in seconds it takes to reach the ground.
+    """
+    return math.sqrt((2 * height) / gravity)
+
+# Example usage:
+height = 100  # Height in meters
+fall_time = time_to_fall(height)
+print(f"It takes {fall_time:.2f} seconds to fall from {height} meters.")
 
 
 
+# optimisation
 from scipy.optimize import minimize
 
-# Model: Quadratic function to minimize
-def objective(x):
-    return (x - 3)**2
+# Define the function to minimize
+def objective_function(x):
+    return (x - 3)**2 + 4
 
-# Use scipy's minimize function to find the input that minimizes the function
-result = minimize(objective, x0=0)  # start with an initial guess of x = 0
-print(f"Optimal input: {result.x[0]:.2f}")
+# Initial guess
+initial_guess = 0
+
+# Perform the optimization
+result = minimize(objective_function, initial_guess)
+
+# Extract the optimal value
+optimal_x = result.x[0]
+minimum_value = result.fun
+
+print(f"The minimum value is {minimum_value:.2f} at x = {optimal_x:.2f}")
 
 
 
-from sklearn.linear_model import LinearRegression
+# modeling
 import numpy as np
+from sklearn.linear_model import LinearRegression
 
-# Given input (X) and output (y) data
-X = np.array([[1], [2], [3], [4], [5]])  # input
-y = np.array([1.5, 2.5, 3.5, 4.5, 5.5])  # output
+# Sample data: hours studied vs. exam score
+hours_studied = np.array([[1], [2], [3], [4], [5]])  # Input feature
+exam_scores = np.array([65, 70, 75, 80, 85])         # Output target
 
-# Model: Fit a linear regression
+# Create and train the model
 model = LinearRegression()
-model.fit(X, y)
+model.fit(hours_studied, exam_scores)
 
-# Print the learned model parameters (slope and intercept)
-print(f"Model: y = {model.coef_[0]:.2f} * x + {model.intercept_:.2f}")
+# Coefficient (slope) and intercept
+slope = model.coef_[0]
+intercept = model.intercept_
+
+print(f"Model equation: score = {slope:.2f} * hours_studied + {intercept:.2f}")
+
+# Predicting the exam score for 6 hours of study
+predicted_score = model.predict([[6]])
+print(f"  EXAMPLE: Predicted exam score after 6 hours of study: {predicted_score[0]:.2f}")
